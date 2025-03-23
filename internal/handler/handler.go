@@ -8,7 +8,7 @@ import (
 	"github.com/ttvdmt/url_shortener/internal/storage"
 )
 
-func Init(storage *storage.Storage) {
+func Init(storage storage.Storager) {
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
 		service.Create(w, r, storage)
 	})
