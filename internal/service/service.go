@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/ttvdmt/url_shortener/internal/storage"
 )
 
-func Create(w http.ResponseWriter, r *http.Request, storage storage.Storager) {
+func Create(w http.ResponseWriter, r *http.Request, storage storage.Storager, default_ttl string) {
 	if storage == nil {
 		fmt.Println("empty storage")
 		return
@@ -25,7 +26,18 @@ func Create(w http.ResponseWriter, r *http.Request, storage storage.Storager) {
 		return
 	}
 
-	code, err := storage.Save(originalURL)
+	ttl := r.FormValue("ttl")
+	if ttl == "" {
+		ttl = default_ttl
+	}
+
+	parsed_ttl, err := time.ParseDuration(ttl)
+	if err != nil {
+		http.Error(w, "Wrong TTL", http.StatusBadRequest)
+		return
+	}
+
+	code, err := storage.Save(originalURL, parsed_ttl)
 	if err != nil {
 		fmt.Println("cant create short URL%w", err)
 		return

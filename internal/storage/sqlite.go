@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/ttvdmt/url_shortener/pkg/encode"
@@ -25,10 +26,11 @@ func NewSQLStorage(path string) (*SQL_Storage, error) {
 	return &SQL_Storage{Db: db, Mu: &sync.RWMutex{}}, nil
 }
 
-func (s *SQL_Storage) Save(url string) (string, error) {
+func (s *SQL_Storage) Save(url string, ttl time.Duration) (string, error) {
 	code := encode.GenerateCode(6)
 
-	if _, err := s.Db.Exec("INSERT INTO urls (code, original_url) VALUES (?, ?)", code, url); err != nil {
+	death_time := time.Now().Add(ttl).Format("2006-01-02")
+	if _, err := s.Db.Exec("INSERT INTO urls (code, original_url, death_time) VALUES (?, ?, ?)", code, url, death_time); err != nil {
 		return "", fmt.Errorf("cant save URL: %w", err)
 	}
 
@@ -48,4 +50,13 @@ func (s *SQL_Storage) Get(code string) (string, error) {
 
 func (s *SQL_Storage) Close() error {
 	return s.Db.Close()
+}
+
+func (s *SQL_Storage) CleanUp() error {
+	_, err := s.Db.Exec("DELETE FROM urls WHERE death_time < date('now')")
+	if err != nil {
+		return fmt.Errorf("cant clean old urls: %w", err)
+	}
+
+	return nil
 }

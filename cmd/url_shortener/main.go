@@ -14,14 +14,15 @@ func main() {
 		fmt.Println(err)
 	}
 
-	st, err := storage.NewSQLStorage(cfg.Database)
+	st, err := storage.NewSQLStorage(cfg.Storage.SQLite.DBPath)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer st.Close()
 
-	handler.Init(st)
+	handler.Init(st, cfg)
 	fmt.Println("Server is ready")
 
-	handler.Listen(cfg.Port)
+	handler.CleanUp(st, cfg)
+	handler.Listen(cfg)
 }

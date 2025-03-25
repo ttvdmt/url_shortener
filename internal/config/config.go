@@ -8,22 +8,36 @@ import (
 )
 
 type Config struct {
-	Port     string `yaml:"port"`
-	Database string `yaml:"database"`
+	App     AppConfig     `yaml:"app"`
+	Storage StorageConfig `yaml:"storage"`
 }
 
-func Load(path string) (*Config, error) {
-	cfg := &Config{}
+type AppConfig struct {
+	Port           string `yaml:"port"`
+	TTL            string `yaml:"ttl_default"`
+	CleanUp_Period string `yaml:"cleanup_period"`
+}
+
+type StorageConfig struct {
+	SQLite SQLiteConfig `yaml:"sqlite"`
+}
+
+type SQLiteConfig struct {
+	DBPath string `yaml:"database"`
+}
+
+func Load(path string) (Config, error) {
+	cfg := Config{}
 
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("cant open config file: %w", err)
+		return Config{}, fmt.Errorf("cant open config file: %w", err)
 	}
 	defer file.Close()
 
 	decoder := yaml.NewDecoder(file)
-	if err := decoder.Decode(cfg); err != nil {
-		return nil, fmt.Errorf("cant decode config: %w", err)
+	if err := decoder.Decode(&cfg); err != nil {
+		return Config{}, fmt.Errorf("cant decode config: %w", err)
 	}
 
 	return cfg, nil

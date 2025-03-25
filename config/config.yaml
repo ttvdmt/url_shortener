@@ -1,2 +1,8 @@
-port: ":8080"
-database: "../../storage/database.db"
+app:
+  port: ":8080"
+  ttl_default: "720h"
+  cleanup_period: "24h"
+
+storage:
+  sqlite:
+    database: "../../storage/database.db"
