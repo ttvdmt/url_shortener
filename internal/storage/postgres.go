@@ -25,8 +25,6 @@ func newPostgres(user, password, host, port, dbname, sslmode string) (*Postgres_
 		return nil, fmt.Errorf("cant open database: %w", err)
 	}
 
-	db.Exec("PRAGMA journal_mode=WAL;")
-
 	return &Postgres_Storage{Db: db, Mu: &sync.RWMutex{}}, nil
 }
 

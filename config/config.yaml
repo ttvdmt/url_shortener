@@ -1,5 +1,6 @@
 app:
-  port: ":8080"
+  host: "localhost"
+  port: "8080"
   ttl_default: "720h"
   cleanup_period: "24h"
 
@@ -11,6 +12,6 @@ storage:
     host: "localhost"       
     port: "5432"              
     user: "user"          
-    password: "password"  
+    password: "pswd"  
     dbname: "db"          
     sslmode: "disable"      

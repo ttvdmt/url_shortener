@@ -20,8 +20,10 @@ func Init(storage storage.Storager, cfg config.Config) {
 }
 
 func Listen(cfg config.Config) error {
+	host := cfg.App.Host
 	port := cfg.App.Port
-	if err := http.ListenAndServe(port, nil); err != nil {
+
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), nil); err != nil {
 		return fmt.Errorf("server cant start listen: %w", err)
 	}
 

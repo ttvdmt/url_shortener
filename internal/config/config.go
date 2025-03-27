@@ -13,6 +13,7 @@ type Config struct {
 }
 
 type AppConfig struct {
+	Host           string `yaml:"host"`
 	Port           string `yaml:"port"`
 	TTL            string `yaml:"ttl_default"`
 	CleanUp_Period string `yaml:"cleanup_period"`
