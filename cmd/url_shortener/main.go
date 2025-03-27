@@ -14,7 +14,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	st, err := storage.NewSQLStorage(cfg.Storage.SQLite.DBPath)
+	st, err := storage.New(cfg)
 	if err != nil {
 		fmt.Println(err)
 	}

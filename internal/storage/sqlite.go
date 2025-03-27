@@ -10,23 +10,23 @@ import (
 	"github.com/ttvdmt/url_shortener/pkg/encode"
 )
 
-type SQL_Storage struct {
+type SQLite_Storage struct {
 	Mu *sync.RWMutex
 	Db *sql.DB
 }
 
-func NewSQLStorage(path string) (*SQL_Storage, error) {
+func newSQLite(path string) (*SQLite_Storage, error) {
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {
-		return nil, fmt.Errorf("cant open database: %v", err)
+		return nil, fmt.Errorf("cant open database: %w", err)
 	}
 
 	db.Exec("PRAGMA journal_mode=WAL;")
 
-	return &SQL_Storage{Db: db, Mu: &sync.RWMutex{}}, nil
+	return &SQLite_Storage{Db: db, Mu: &sync.RWMutex{}}, nil
 }
 
-func (s *SQL_Storage) Save(url string, ttl time.Duration) (string, error) {
+func (s *SQLite_Storage) Save(url string, ttl time.Duration) (string, error) {
 	code := encode.GenerateCode(6)
 
 	death_time := time.Now().Add(ttl).Format("2006-01-02")
@@ -37,22 +37,22 @@ func (s *SQL_Storage) Save(url string, ttl time.Duration) (string, error) {
 	return code, nil
 }
 
-func (s *SQL_Storage) Get(code string) (string, error) {
-	var originalURL string
-	err := s.Db.QueryRow("SELECT original_url FROM urls WHERE code = ?", code).Scan(&originalURL)
+func (s *SQLite_Storage) Get(code string) (string, error) {
+	var original_url string
+	err := s.Db.QueryRow("SELECT original_url FROM urls WHERE code = ?", code).Scan(&original_url)
 
 	if err != nil {
 		return "", fmt.Errorf("cant get URL: %w", err)
 	}
 
-	return originalURL, nil
+	return original_url, nil
 }
 
-func (s *SQL_Storage) Close() error {
+func (s *SQLite_Storage) Close() error {
 	return s.Db.Close()
 }
 
-func (s *SQL_Storage) CleanUp() error {
+func (s *SQLite_Storage) CleanUp() error {
 	_, err := s.Db.Exec("DELETE FROM urls WHERE death_time < date('now')")
 	if err != nil {
 		return fmt.Errorf("cant clean old urls: %w", err)

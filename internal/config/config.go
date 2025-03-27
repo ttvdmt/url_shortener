@@ -19,11 +19,21 @@ type AppConfig struct {
 }
 
 type StorageConfig struct {
-	SQLite SQLiteConfig `yaml:"sqlite"`
+	SQLite     SQLiteConfig   `yaml:"sqlite"`
+	PostgreSQL PostgresConfig `yaml:"postgresql"`
 }
 
 type SQLiteConfig struct {
 	DBPath string `yaml:"database"`
+}
+
+type PostgresConfig struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	DBName   string `yaml:"dbname"`
+	SSLMode  string `yaml:"sslmode"`
 }
 
 func Load(path string) (Config, error) {

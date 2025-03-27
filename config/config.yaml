@@ -5,4 +5,12 @@ app:
 
 storage:
   sqlite:
-    database: "../../storage/database.db"
+    database: ""
+
+  postgresql:
+    host: "localhost"       
+    port: "5432"              
+    user: "user"          
+    password: "password"  
+    dbname: "db"          
+    sslmode: "disable"      
